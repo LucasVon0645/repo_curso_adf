@@ -1,0 +1,9 @@
+{
+	"name": "adf-cursoudemy-lucas",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "06439f5c-68a3-4e35-b337-499752be44d3",
+		"tenantId": "7e93e286-b29a-4454-a41a-e8419ec9deb5"
+	}
+}
