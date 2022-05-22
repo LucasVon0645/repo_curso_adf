@@ -25,6 +25,9 @@
 		},
 		"ls_local_filesLucas_properties_typeProperties_userId": {
 			"value": "Visagio"
+		},
+		"trigger_storage_events_properties_typeProperties_scope": {
+			"value": "/subscriptions/d5f2f554-7252-4f1c-a540-c9cc729e8cf2/resourceGroups/rg-curso-udemy/providers/Microsoft.Storage/storageAccounts/dlscursoudemylucas"
 		}
 	}
 }

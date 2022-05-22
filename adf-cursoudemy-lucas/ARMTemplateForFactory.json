@@ -34,6 +34,10 @@
 		"ls_local_filesLucas_properties_typeProperties_userId": {
 			"type": "string",
 			"defaultValue": "Visagio"
+		},
+		"trigger_storage_events_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/d5f2f554-7252-4f1c-a540-c9cc729e8cf2/resourceGroups/rg-curso-udemy/providers/Microsoft.Storage/storageAccounts/dlscursoudemylucas"
 		}
 	},
 	"variables": {
@@ -1706,6 +1710,38 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_storage_events')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipe_trigger_wait",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/csvfiles/blobs/cidadesTrigger",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trigger_storage_events_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobDeleted",
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipe_trigger_wait')]"
+			]
 		}
 	]
 }
