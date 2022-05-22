@@ -1,0 +1,16 @@
+{
+	"name": "ls_local_sqlserver",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=VISAGIO-DMHKHJ2\\SQLEXPRESS;initial catalog=BikeStores;user id=lucas",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI2NDM4YmEzNy02NzJiLTQyNTQtYWM2MS0wMTY4YjU0OTNhZGQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "irADF",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
