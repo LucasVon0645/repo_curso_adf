@@ -1,6 +1,17 @@
 {
 	"name": "pipe_trigger_wait",
 	"properties": {
+		"activities": [
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
 		"folder": {
 			"name": "adf_04_handson02"
 		},
