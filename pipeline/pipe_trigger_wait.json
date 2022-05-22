@@ -1,0 +1,9 @@
+{
+	"name": "pipe_trigger_wait",
+	"properties": {
+		"folder": {
+			"name": "adf_04_handson02"
+		},
+		"annotations": []
+	}
+}
