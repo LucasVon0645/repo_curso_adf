@@ -1,0 +1,17 @@
+{
+	"name": "trigger_schedule",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 1,
+				"startTime": "2022-05-22T10:50:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
