@@ -15,13 +15,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_datalake'"
 		},
-		"ls_local_sqlserver_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_local_sqlserver'"
-		},
 		"ls_local_filesLucas_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'ls_local_filesLucas'"
+		},
+		"ls_local_sqlserver_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_local_sqlserver'"
 		},
 		"ls_datalake_properties_typeProperties_url": {
 			"type": "string",
@@ -65,6 +65,33 @@
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-05-18T15:25:41Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipe_trigger_wait')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "adf_04_handson02"
+				},
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -462,25 +489,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_local_sqlserver')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('ls_local_sqlserver_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "irADF",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/irADF')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ls_local_filesLucas')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -502,6 +510,55 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/irADF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_local_sqlserver')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_local_sqlserver_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "irADF",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/irADF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_schedule')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipe_trigger_wait",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 1,
+						"startTime": "2022-05-22T10:50:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipe_trigger_wait')]"
 			]
 		},
 		{
@@ -1360,235 +1417,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_generico_csv')]",
 				"[concat(variables('factoryId'), '/datasets/ds_generico_parquet')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pratica_02')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "listar parquet",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "ds_generico_parquet",
-								"type": "DatasetReference",
-								"parameters": {
-									"containername": "parquetfiles",
-									"filename": "*"
-								}
-							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"enablePartitionDiscovery": false
-							}
-						}
-					},
-					{
-						"name": "lista de parquet",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "listar parquet",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('listar parquet').output.childItems",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "parquet para sql",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "ParquetSource",
-											"storeSettings": {
-												"type": "AzureBlobFSReadSettings",
-												"recursive": true,
-												"enablePartitionDiscovery": false
-											}
-										},
-										"sink": {
-											"type": "AzureSqlSink",
-											"writeBehavior": "insert",
-											"sqlWriterUseTableLock": false,
-											"tableOption": "autoCreate",
-											"disableMetricsCollection": false
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "ds_generico_parquet",
-											"type": "DatasetReference",
-											"parameters": {
-												"containername": "parquetfiles",
-												"filename": {
-													"value": "@replace(item().name, '.parquet', '')",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "ds_sqldb_generico",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "SalesLT",
-												"tableName": {
-													"value": "@replace(item().name, '.parquet', '')",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					},
-					{
-						"name": "Proc Cor",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "lista de parquet",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[SalesLT].[usp_remove_cores_duplicadas]"
-						},
-						"linkedServiceName": {
-							"referenceName": "ls_azuresql",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Proc Cidade",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "lista de parquet",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[SalesLT].[usp_remove_cidades_duplicadas]"
-						},
-						"linkedServiceName": {
-							"referenceName": "ls_azuresql",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "adf_03_handson01"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-05-21T17:11:40Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_generico_parquet')]",
-				"[concat(variables('factoryId'), '/linkedServices/ls_azuresql')]",
-				"[concat(variables('factoryId'), '/datasets/ds_sqldb_generico')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_sqlserver_local')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_local_sqlserver",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"schemaName": {
-						"type": "string"
-					},
-					"tableName": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().schemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().tableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_local_sqlserver')]"
 			]
 		}
 	]
