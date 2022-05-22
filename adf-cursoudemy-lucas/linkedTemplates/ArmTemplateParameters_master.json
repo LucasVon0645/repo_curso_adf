@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-cursoudemy-lucas"
+		},
+		"ls_azuresql_connectionString": {
+			"value": ""
+		},
+		"ls_datalake_accountKey": {
+			"value": ""
+		},
+		"ls_local_sqlserver_connectionString": {
+			"value": ""
+		},
+		"ls_local_filesLucas_password": {
+			"value": ""
+		},
+		"ls_datalake_properties_typeProperties_url": {
+			"value": "https://dlscursoudemylucas.dfs.core.windows.net"
+		},
+		"ls_local_filesLucas_properties_typeProperties_host": {
+			"value": "C:\\Users\\Visagio\\Documents\\Treinamento ADF"
+		},
+		"ls_local_filesLucas_properties_typeProperties_userId": {
+			"value": "Visagio"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
